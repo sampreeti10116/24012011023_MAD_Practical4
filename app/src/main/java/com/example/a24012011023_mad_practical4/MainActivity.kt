@@ -42,10 +42,11 @@ class MainActivity : AppCompatActivity() {
         alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
 
         findViewById<MaterialButton>(R.id.btnSetAlarm).setOnClickListener {
+            checkExactAlarmPermission()
             showTimedialog()
         }
         findViewById<MaterialButton>(R.id.btnCancelAlarm).setOnClickListener {
-
+            cancelAlarm()
         }
     }
     private fun showTimedialog(){
@@ -58,6 +59,15 @@ class MainActivity : AppCompatActivity() {
             h,m,false
         )
         picker.show()
+    }
+    private fun checkExactAlarmPermission(){
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                startActivity(intent)
+            }
+        }
     }
     private fun sendDialogDataToActivity(hour:Int,minute:Int){
         val calendar=java.util.Calendar.getInstance()
