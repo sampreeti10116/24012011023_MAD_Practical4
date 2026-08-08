@@ -1,9 +1,14 @@
 package com.example.a24012011023_mad_practical4
 
+import android.app.PendingIntent
+import android.app.AlarmManager
 import android.app.TimePickerDialog
+import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
+import android.widget.TextClock
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,10 +16,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     lateinit var textAlarm: TextView
     lateinit var cardSetAlarm: MaterialCardView
+    lateinit var alarmTimeValue: TextView
+    var pendingIntent: PendingIntent?=null
+    lateinit var alarmManager: AlarmManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,11 +34,15 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        textAlarm=findViewById<TextView>(R.id.textView4)
-        cardSetAlarm=findViewById(R.id.card_list)
-        cardSetAlarm.visibility= View.GONE
-        findViewById<MaterialButton>(R.id.btnSetAlarm).setOnClickListener {
 
+        textAlarm=findViewById<TextClock>(R.id.textView4)
+        cardSetAlarm=findViewById(R.id.card_list)
+        alarmTimeValue=findViewById<TextView>(R.id.alarmTimeValue)
+        cardSetAlarm.visibility= View.GONE
+        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
+        findViewById<MaterialButton>(R.id.btnSetAlarm).setOnClickListener {
+            showTimedialog()
         }
         findViewById<MaterialButton>(R.id.btnCancelAlarm).setOnClickListener {
 
@@ -46,6 +60,32 @@ class MainActivity : AppCompatActivity() {
         picker.show()
     }
     private fun sendDialogDataToActivity(hour:Int,minute:Int){
+        val calendar=java.util.Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY,hour)
+        calendar.set(Calendar.MINUTE,minute)
+        calendar.set(Calendar.SECOND,0)
 
+        cardSetAlarm.visibility= View.VISIBLE
+        val sdf = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
+        alarmTimeValue.text = sdf.format(calendar.time)
+
+        val intent= Intent(this, AlarmBroadcastReceiver::class.java)
+        intent.putExtra(AlarmBroadcastReceiver.SERVICE_KEY, AlarmBroadcastReceiver.START_VAL)
+
+        pendingIntent= PendingIntent.getBroadcast(this,0,intent, PendingIntent.FLAG_IMMUTABLE)
+
+        pendingIntent?.let {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, it)
+        }
+    }
+
+    private fun cancelAlarm(){
+        val intent= Intent(this, AlarmBroadcastReceiver::class.java)
+        intent.putExtra(AlarmBroadcastReceiver.SERVICE_KEY, AlarmBroadcastReceiver.STOP_VAL)
+        sendBroadcast(intent)
+
+        pendingIntent?.let { alarmManager.cancel(it) }
+        cardSetAlarm.visibility= View.GONE
+        alarmTimeValue.text="--:-- --"
     }
 }
