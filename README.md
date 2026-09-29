@@ -408,6 +408,18 @@ After completing this practical, the student will be able to:
 - Configure exact-alarm permissions in the Manifest.
 - Understand communication between Activity, AlarmManager, BroadcastReceiver, and Service.
 
+## Output Screenshots
+<table>
+    <tr>
+        <td><img width="223" height="479" alt="image" src="https://github.com/user-attachments/assets/3f71ba6e-acb9-4ecb-bcfc-6330403b8949" />
+</td>
+        <td><img width="224" height="479" alt="image" src="https://github.com/user-attachments/assets/0750736c-fe8a-4ea3-bcad-c09f17a718f9" />
+</td>
+        <td><img width="221" height="475" alt="image" src="https://github.com/user-attachments/assets/34edad52-495e-4e46-9e5f-76276c921afb" />
+</td>
+    </tr>
+</table>
+
 ## Conclusion
 
 Practical-4 demonstrates the development of an Android Alarm application using **AlarmManager, PendingIntent, BroadcastReceiver, and Service**. The practical also introduces time and date handling, audio playback using MediaPlayer, Intent data transfer, system services, MaterialCardView, and exact-alarm permissions. These concepts provide a foundation for developing Android applications that perform scheduled background operations.
